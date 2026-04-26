@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const protect = require("../middleware/authMiddleware");
 
 const {
   getSettings,
@@ -8,12 +9,12 @@ const {
 } = require("../controllers/settingsController");
 
 // Get settings
-router.get("/:email", getSettings);
+router.get("/:email", protect, getSettings);
 
 // Update settings
-router.post("/", updateSettings);
+router.post("/", protect, updateSettings);
 
 // Reset settings
-router.post("/reset/:email", resetSettings);
+router.post("/reset/:email", protect, resetSettings);
 
 module.exports = router;

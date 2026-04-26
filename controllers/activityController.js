@@ -3,10 +3,20 @@ const ActivityLog = require("../models/ActivityLog");
 // CREATE ACTIVITY LOG
 const createActivity = async (req, res) => {
   try {
-    const { id, userEmail, type, activity, createdAt } = req.body;
+    // secure email from JWT
+    const userEmail = req.user.email;
 
-    if (!userEmail || !type || !activity) {
-      return res.status(400).json({ message: "Required fields missing" });
+    const {
+      id,
+      type,
+      activity,
+      createdAt
+    } = req.body;
+
+    if (!type || !activity) {
+      return res.status(400).json({
+        message: "Required fields missing"
+      });
     }
 
     const log = new ActivityLog({
@@ -25,36 +35,48 @@ const createActivity = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
 
-// GET ALL ACTIVITY FOR USER
+// GET USER ACTIVITIES
 const getUserActivities = async (req, res) => {
   try {
-    const email = req.params.email;
+    // secure email from JWT
+    const email = req.user.email;
 
-    const logs = await ActivityLog.find({ userEmail: email })
-      .sort({ createdAt: -1 });
+    const logs = await ActivityLog.find({
+      userEmail: email
+    }).sort({
+      createdAt: -1
+    });
 
     res.json(logs);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
 
-// DELETE ACTIVITY (optional admin/debug use)
+// DELETE ACTIVITY
 const deleteActivity = async (req, res) => {
   try {
     const { id } = req.params;
 
     await ActivityLog.findByIdAndDelete(id);
 
-    res.json({ message: "Activity deleted" });
+    res.json({
+      message: "Activity deleted"
+    });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
 

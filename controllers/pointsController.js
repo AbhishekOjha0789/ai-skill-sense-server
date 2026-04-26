@@ -1,23 +1,40 @@
 const Points = require("../models/Points");
 const PointsLog = require("../models/PointsLog");
 
-// Add points function
+// ADD POINTS
 const addPoints = async (req, res) => {
   try {
-    const { id, userEmail, amount, createdAt, desc } = req.body;
+    // secure email from JWT
+    const userEmail = req.user.email;
 
-    if (!userEmail || !amount) {
-      return res.status(400).json({ message: "Missing fields" });
+    const {
+      id,
+      amount,
+      createdAt,
+      desc
+    } = req.body;
+
+    if (amount == null) {
+      return res.status(400).json({
+        message: "Amount is required"
+      });
     }
 
     // 1. Update total points
     const updated = await Points.findOneAndUpdate(
       { userEmail },
-      { $inc: { total: amount } },
-      { upsert: true, new: true }
+      {
+        $inc: {
+          total: amount
+        }
+      },
+      {
+        upsert: true,
+        new: true
+      }
     );
 
-    // 2. Log history
+    // 2. Save points log
     await PointsLog.create({
       id,
       userEmail,
@@ -32,8 +49,12 @@ const addPoints = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message
+    });
   }
 };
 
-module.exports = { addPoints };
+module.exports = {
+  addPoints
+};

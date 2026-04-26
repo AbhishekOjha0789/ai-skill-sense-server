@@ -21,19 +21,32 @@ const getProfile = async (req, res) => {
 // SAVE / UPDATE PROFILE
 const saveProfile = async (req, res) => {
   try {
+    // take email from verified JWT token
+    const userEmail = req.user.email;
+
+    const updatedData = {
+      ...req.body,
+      userEmail,
+    };
+
     const data = await PersonalInfo.findOneAndUpdate(
-      { userEmail: req.body.userEmail },
-      req.body,
-      { upsert: true, new: true }
+      { userEmail },
+      updatedData,
+      {
+        upsert: true,
+        new: true,
+      }
     );
 
     res.json({
       message: "Profile saved successfully",
-      data
+      data,
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message,
+    });
   }
 };
 

@@ -3,25 +3,38 @@ const Settings = require("../models/Settings");
 // GET SETTINGS
 const getSettings = async (req, res) => {
   try {
-    const email = req.params.email;
+    // use email from verified JWT
+    const email = req.user.email;
 
-    const settings = await Settings.findOne({ userEmail: email });
+    const settings = await Settings.findOne({
+      userEmail: email
+    });
 
     if (!settings) {
-      return res.status(404).json({ message: "Settings not found" });
+      return res.status(404).json({
+        message: "Settings not found"
+      });
     }
 
     res.json(settings);
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
 
 // CREATE / UPDATE SETTINGS
 const updateSettings = async (req, res) => {
   try {
-    const { userEmail, theme, notificationsEnabled } = req.body;
+    // secure email from JWT
+    const userEmail = req.user.email;
+
+    const {
+      theme,
+      notificationsEnabled
+    } = req.body;
 
     const updated = await Settings.findOneAndUpdate(
       { userEmail },
@@ -30,7 +43,10 @@ const updateSettings = async (req, res) => {
         theme,
         notificationsEnabled
       },
-      { upsert: true, new: true }
+      {
+        upsert: true,
+        new: true
+      }
     );
 
     res.json({
@@ -39,22 +55,29 @@ const updateSettings = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
 
-// RESET SETTINGS (optional)
+// RESET SETTINGS
 const resetSettings = async (req, res) => {
   try {
-    const email = req.params.email;
+    // secure email from JWT
+    const email = req.user.email;
 
     const defaultSettings = await Settings.findOneAndUpdate(
       { userEmail: email },
       {
+        userEmail: email,
         theme: "light",
         notificationsEnabled: true
       },
-      { upsert: true, new: true }
+      {
+        upsert: true,
+        new: true
+      }
     );
 
     res.json({
@@ -63,7 +86,9 @@ const resetSettings = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
 

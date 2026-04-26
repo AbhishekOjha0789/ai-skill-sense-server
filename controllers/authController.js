@@ -46,18 +46,40 @@ const login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
 
+    // check user exists
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({
+        error: "Invalid credentials"
+      });
     }
 
-    const isMatch = await bcrypt.compare(pin, user.pin);
+    // compare entered pin with hashed pin
+    const isMatch = await bcrypt.compare(
+      pin.toString(),
+      user.pin
+    );
 
     if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({
+        error: "Invalid credentials"
+      });
     }
+
+    // CREATE JWT TOKEN
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d"
+      }
+    );
 
     res.json({
       message: "Login successful",
+      token,
       user: {
         id: user._id,
         email: user.email,
@@ -66,7 +88,9 @@ const login = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 };
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const protect = require("../middleware/authMiddleware");
 
 const {
   createActivity,
@@ -8,12 +9,12 @@ const {
 } = require("../controllers/activityController");
 
 // Create log
-router.post("/", createActivity);
+router.post("/", protect, createActivity);
 
 // Get user logs
-router.get("/:email", getUserActivities);
+router.get("/:email", protect, getUserActivities);
 
 // Delete log (optional)
-router.delete("/:id", deleteActivity);
+router.delete("/:id", protect, deleteActivity);
 
 module.exports = router;
