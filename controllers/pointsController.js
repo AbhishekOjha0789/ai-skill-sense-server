@@ -55,6 +55,29 @@ const addPoints = async (req, res) => {
   }
 };
 
+// GET POINTS
+const getPoints = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const points = await Points.findOne({ userEmail: email });
+    
+    if (!points) {
+      return res.status(404).json({
+        message: "Points not found"
+      });
+    }
+
+    res.status(200).json(points);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
-  addPoints
+  addPoints,
+  getPoints
 };

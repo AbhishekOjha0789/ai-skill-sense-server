@@ -3,8 +3,9 @@ const router = express.Router();
 const protect = require("../middleware/authMiddleware");
 
 // Import controller
-const { addPoints } = require("../controllers/pointsController");
+const { addPoints, getPoints } = require("../controllers/pointsController");
 
-router.post("/add", protect, addPoints);
+router.post("/", protect, addPoints);
+router.get("/:email", protect, getPoints);
 
 module.exports = router;
