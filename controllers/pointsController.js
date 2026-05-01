@@ -1,6 +1,43 @@
 const Points = require("../models/Points");
 const PointsLog = require("../models/PointsLog");
 
+// INITIALIZE DEFAULT POINTS
+const initializePoints = async (req, res) => {
+  try {
+    // secure email from JWT
+    const userEmail = req.user.email;
+
+    // check if already exists
+    const existing = await Points.findOne({ userEmail });
+
+    if (existing) {
+      return res.status(200).json({
+        message: "Points already initialized",
+        data: existing
+      });
+    }
+
+    // create default values
+    const created = await Points.create({
+      userEmail,
+      total: 0,
+      prof: 0,
+      personal: 0,
+      health: 0
+    });
+
+    res.status(201).json({
+      message: "Points initialized successfully",
+      data: created
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
 // ADD POINTS
 const addPoints = async (req, res) => {
   try {
@@ -79,5 +116,6 @@ const getPoints = async (req, res) => {
 
 module.exports = {
   addPoints,
-  getPoints
+  getPoints,
+  initializePoints
 };
