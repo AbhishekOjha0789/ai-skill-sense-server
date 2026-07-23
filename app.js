@@ -21,6 +21,7 @@ app.use("/api/user", require("./routes/user"));
 app.use("/api/settings", require("./routes/settings"));
 app.use("/api/points", require("./routes/points"));
 app.use("/api/activity", require("./routes/activity"));
+app.use("/api/ai", require("./routes/aiRoutes"));
 
 // test route
 app.get("/", (req, res) => {
